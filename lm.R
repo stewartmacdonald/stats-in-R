@@ -194,13 +194,13 @@ summary(mod)
 # Let's look at the important lines
 
 ##################################################################
-# (Intercept) -17.5791     6.7584  -2.601   0.0123 *  
+# "(Intercept) -17.5791     6.7584  -2.601   0.0123 *"
 ##################################################################
 # This just tells us that the intercept is different from zero.  
 # Normally this isn't particularly interesting because the null hypothesis,
-#	 that the int = 0, is often a silly null.
-# Usually we are more interested in whether there is a relationship between our variables
-#	this is captured in the slope.
+#	 that the intercept is 0, is usually not a useful null hypothesis.
+# Usually we are more interested in whether there is a relationship between our variables.
+# This relationship is represented by the slope of the line.
 
 ##################################################################
 # "# cars$speed    3.9324     0.4155   9.464 1.49e-12 ***"
@@ -238,6 +238,8 @@ rsq.adj <- 1 - (1 - rsq) * ( (nrow(cars) - 1) / (nrow(cars) - p - 1) )
 # We can append two other car-based factors to our dataframe.
 # A list of somewhat realistic masses that we expect to have an effect on dist:
 mass <- c(40, 80, 40, 90, 90, 40, 110, 200, 300, 50, 80, 60, 70, 80, 90, 80, 110, 110, 150, 70, 90, 200, 300, 40, 60, 120, 80, 90, 80, 90, 110, 80, 110, 150, 200, 80, 100, 150, 70, 90, 95, 100, 110, 110, 90, 110, 150, 155, 180, 90)
+# Note: the c() function in R combines these individual numbers into a numeric vector (i.e., a collection of numbers).
+
 
 # These are 50 random ages between 18 and 90, generated with sample(18:90, 50).
 # We expect that these will have no effect on stopping distance, as they are random numbers.
@@ -285,7 +287,7 @@ summary(mod3) # Multiple R-squared:  0.8508,  Adjusted R-squared:  0.841
 
 # Interactions
 # Adding in a (multiplicative) interaction term is the same as adding in a new additive predictor
-# variable that itself is made up of the product of the two terms in the interaction
+# variable that itself is made up of the product of the two terms in the interaction.
 
 # Create a new column in the cars2 data frame that is the product of speed and mass (i.e., speed multiplied by mass):
 cars2$speedMass <- cars2$speed * cars2$mass
@@ -296,7 +298,7 @@ mod2 <- lm(dist ~ speed + mass + speed*mass, data=cars2)
 # Create a model object that has the speedMass product in it. Note that we add it in with +, not *:
 mod3 <- lm(dist ~ speed + mass + speedMass , data=cars2)
 
-# Look at the summaries to see that the two models are equal
+# Look at the summaries to see that the two models are equal:
 summary(mod2)
 summary(mod3)
 
