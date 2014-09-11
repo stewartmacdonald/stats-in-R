@@ -284,9 +284,19 @@ summary(mod3) # Multiple R-squared:  0.8508,  Adjusted R-squared:  0.841
 
 
 # Interactions
+# Adding in a (multiplicative) interaction term is the same as adding in a new additive predictor
+# variable that itself is made up of the product of the two terms in the interaction
+
+# Create a new column in the cars2 data frame that is the product of speed and mass (i.e., speed multiplied by mass):
 cars2$speedMass <- cars2$speed * cars2$mass
+
+# Create a model object with an interaction between speed and mass (denoted by 'speed*mass'):
 mod2 <- lm(dist ~ speed + mass + speed*mass, data=cars2)
-mod3 <- lm(dist ~ speed + mass + speedMass, data=cars2)
+
+# Create a model object that has the speedMass product in it. Note that we add it in with +, not *:
+mod3 <- lm(dist ~ speed + mass + speedMass , data=cars2)
+
+# Look at the summaries to see that the two models are equal
 summary(mod2)
 summary(mod3)
 
