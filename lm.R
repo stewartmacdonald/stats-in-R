@@ -5,7 +5,10 @@
 # http://blog.minitab.com/blog/adventures-in-statistics/regression-analysis-how-do-i-interpret-r-squared-and-assess-the-goodness-of-fit
 # http://blog.minitab.com/blog/adventures-in-statistics/why-you-need-to-check-your-residual-plots-for-regression-analysis
 # http://en.wikipedia.org/wiki/Coefficient_of_determination#Adjusted_R2
+# http://faculty.chicagobooth.edu/richard.hahn/teaching/FormulaNotation.pdf
+
 # Thanks to Ben Phillips for clarification of a couple of key points.
+
 
 #STRAIGHT LINES
 # This is a simple example where y = x
@@ -90,14 +93,14 @@ summary(mod)
 # F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12
 ##################################################################
 
-# In a model with a response variable and a single predictor, we get a y-intercept value and a single slope value. These are the 'Estimates':
+# In a model with a response variable and a single predictor, we get a y-intercept value (the A value in our general linear equation) and a single slope value (b). These are the 'Estimates':
 #       Intercept (A) = -17.5791
 # Slope for speed (b) =   3.9324
 
 # we can use the output of the linear model to plot a straight line (that's the 'linear' part of this) through our data, using the intercept and slope:
 abline(a=coef(mod)['(Intercept)'], b=coef(mod)['cars$speed'])
 
-# the abline function is smart enough to extract the slope and intercept from a regression object:
+# the abline function (so named because it plots a line using values of A and b) is smart enough to extract the slope and intercept from a regression object:
 abline(reg=mod, col='red')
 
 # Essentially, a linear model is fitting a 'line of best fit' through your data and then giving you information about that fit.
@@ -105,6 +108,7 @@ abline(reg=mod, col='red')
 # So if we have an x-value of 10.5, our expected y-value would be:
 # y = bx + A
 y <- 3.9324 * 10.5 + -17.5791
+#  = 23.7111
 
 # For each set of observations, you'll have a real value of y and a 'fitted' value (often denoted as y'). This is the value of y that sits on the line at x.
 # We'll examine one data point (point 23, for no particular reason) more closely:
@@ -152,8 +156,7 @@ b <- cor(cars$speed, cars$dist) * ( sd(cars$dist) / sd(cars$speed) )
 
 # We can plot the centroid (the coordinate of the x and y means):
 points(mean(cars$speed), mean(cars$dist), pch=3, cex=2)
-# The regression line (the line with slope b) will pass through this centroid, so once we've calculated the slope,
-# we can determine the y-intercept just by following the line back to x=0.
+# The regression line (the line with slope b) will pass through this centroid.
 # Knowing the centroid means we have a known point on our regression line. We can use these known values to rearrange the straight-line equation and solve for A:
 # y = bx + A
 # A = y - bx
@@ -169,7 +172,7 @@ abline(a=A, b=b, lwd=4, col='red')
 
 
 # INTERPRETING THE OUTPUT OF A LINEAR MODEL
-# Look at a summary of the model object
+# Look at a summary of the model object:
 summary(mod)
 ##################################################################
 # Call:
@@ -205,9 +208,9 @@ summary(mod)
 ##################################################################
 # "# cars$speed    3.9324     0.4155   9.464 1.49e-12 ***"
 ##################################################################
-# This line gives us information about speed as a predictor variable
+# This line gives us information about speed as a predictor variable, including the slope of the line.
 # The '***' tells us that speed has a statistically significant effect on stopping distance.
-# that is, the slope is significantly different from zero (i.e., there is a relationship)
+# That is, the slope is significantly different from zero (i.e., there is a relationship).
 # In this case, our p-value is < 0.001.
 
 ##################################################################
@@ -217,18 +220,19 @@ summary(mod)
 # It's built on 48 degrees of freedom, which is nrow(cars) - 2, as we used 2 parameters (slope and intercept) to calculate it.
 sqrt( sum(residuals(mod)^2) / (nrow(cars) - 2) )
 # -2 because we're calculating from a sample, not the population, and we've already used two parameters (slope and intercept)
+# nrow() is function that returns the number of rows in a data frame. In our case, this is the number of observations we have in the cars dataset (50 rows).
 
 ##################################################################
 # "Multiple R-squared:  0.6511,	Adjusted R-squared:  0.6438 "
 ##################################################################
-# r^2 is a measure of goodness of fit, and is the proportion of the response variable variation that is explained by the model.
+# R-squared is a measure of goodness of fit, and is the proportion of the response variable variation that is explained by the model.
 # In our simple linear regression, it is:
 rsq <- cor(cars$speed, cars$dist)^2 
-# r^2 will always increase as you add predictor variables in a multiple regression, but it doesn't mean that your model is getting better.
+# R-squared will always increase as you add predictor variables in a multiple regression, but this doesn't mean that your model is getting better.
 # Adding more terms might simply start 'explaining' random noise in your data.
-# The adjusted r-squared value accounts for the number of terms in the model.
+# The adjusted R-squared value accounts for the number of terms in the model.
 # The adjusted value can be used to compare goodness-of-fit between two models with differing numbers of terms.
-# It can be negative, and will always be less than or equal to the standard r^2.
+# It can be negative, and will always be less than or equal to the standard R-squared.
 p <- 1 # we have one predictor: speed
 rsq.adj <- 1 - (1 - rsq) * ( (nrow(cars) - 1) / (nrow(cars) - p - 1) )
 
@@ -240,10 +244,9 @@ rsq.adj <- 1 - (1 - rsq) * ( (nrow(cars) - 1) / (nrow(cars) - p - 1) )
 mass <- c(40, 80, 40, 90, 90, 40, 110, 200, 300, 50, 80, 60, 70, 80, 90, 80, 110, 110, 150, 70, 90, 200, 300, 40, 60, 120, 80, 90, 80, 90, 110, 80, 110, 150, 200, 80, 100, 150, 70, 90, 95, 100, 110, 110, 90, 110, 150, 155, 180, 90)
 # Note: the c() function in R combines these individual numbers into a numeric vector (i.e., a collection of numbers).
 
-
 # These are 50 random ages between 18 and 90, generated with sample(18:90, 50).
 # We expect that these will have no effect on stopping distance, as they are random numbers.
-# (Note that in the real world, driver age probably does have an effect on stopping distance.)
+# (Note that in the real world, driver age probably does have an effect on stopping distance; people aged 1, 30, and 90 are likely to have very different reaction times.)
 driverAge <- c(56, 85, 83, 32, 49, 78, 38, 29, 48, 69, 74, 41, 58, 62, 82, 87, 45, 50, 77, 26, 34, 66, 86, 65, 90, 27, 60, 46, 72, 28, 64, 19, 63, 59, 57, 54, 25, 51, 18, 61, 36, 67, 35, 31, 39, 81, 76, 23, 30, 68)
 
 # cbind binds these two extra columns to our existing cars dataframe, and creates a new 'cars2' object
@@ -271,7 +274,7 @@ summary(mod3) # Multiple R-squared:  0.8508,  Adjusted R-squared:  0.841
 #   mass          0.20664    0.02652   7.792 6.00e-10 ***
 #   driverAge     0.07378    0.07292   1.012    0.317    
 ##################################################################
-# This tells us that both speed and mass have a statistically significant effect on stopping distance,
+# This tells us that both speed and mass have a statistically significant effect on stopping distance (as indicated by the low p-values and the '***' signifiers at the end of rows),
 # but that driverAge (with a p-value of 0.317) does not (which is expected, given that it's a random number).
 
 # Also note that the slope for speed changes when we include mass in the model.
@@ -294,11 +297,22 @@ cars2$speedMass <- cars2$speed * cars2$mass
 
 # Create a model object with an interaction between speed and mass (denoted by 'speed*mass'):
 mod2 <- lm(dist ~ speed + mass + speed*mass, data=cars2)
+# Note: the '*' operator means 'these two variables plus their interaction. The ':' operator means 'the interaction between these variables, but not the variables by themselves'.
+# The I() operator means 'as-is', and can be used to generate new variables by interpreting arithmetic operators.
+# The model will only include each variable once, so the following are equal:
+#  dist ~ speed + mass + speed*mass
+#  dist ~ speed + mass + speedMass
+#  dist ~ speed + mass + I(speed*mass) # this is the same as calculating the product of speed and mass outside of the formula and including that new variable in the model.
+#  dist ~ speed + mass + speed:mass
+#  dist ~ speed*mass
+# All of the above will include speed and mass and the multiplicative interaction between speed and mass.
 
 # Create a model object that has the speedMass product in it. Note that we add it in with +, not *:
-mod3 <- lm(dist ~ speed + mass + speedMass , data=cars2)
+mod3 <- lm(dist ~ speed + mass + speedMass, data=cars2)
 
 # Look at the summaries to see that the two models are equal:
 summary(mod2)
 summary(mod3)
 
+# remove the speed*mass interaction, which is column number 5
+cars2 <- cars2[,-5]
