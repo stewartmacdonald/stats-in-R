@@ -279,7 +279,7 @@ summary(mod3) # Multiple R-squared:  0.8508,  Adjusted R-squared:  0.841
 
 # Also note that the slope for speed changes when we include mass in the model.
 
-# Up till now we've been visualising (graphing) a straight-line relationship with only one predictor, but what do we do with more than one predictor?
+# Until now we've been visualising (graphing) a straight-line relationship with only one predictor, but what do we do with more than one predictor?
 # With two predictor variables (plus the response variable, for a total of three variables), we can imagine a tilted plane that predicts our data, 
 #	but by the time we get to four total variables it's best to give up visualising
 #	and just accept that the model provides a prediction for each datapoint based on that point's predictor variable values.
