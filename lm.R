@@ -9,6 +9,9 @@
 
 # Thanks to Ben Phillips for clarification of a couple of key points.
 
+# Note: This tutorial assumes you have a basic knowlege of using R, but here's a very quick rundown:
+# Lines that start with a hashtag are comments and are ignored by R.
+# All other lines are interpreted by R. You can copy and paste the line into R, or use something like R Studio and run this script one line at a time.
 
 #STRAIGHT LINES
 # This is a simple example where y = x
@@ -18,7 +21,7 @@ plot(testX, testY, pch=16, xlim=c(0,10), ylim=c(0, 10))
 lines(testX, testY)
 
 # The y-intercept is the value of y when x=0. In the above case, the intercept is 0.
-# We can shift the intercept by adding a constant amount to x. Here, the intercept is now 1:
+# We can shift the intercept by adding a constant amount to our x value. Here, the intercept is now 1:
 testY <- testX + 1
 plot(testX, testY, pch=16, xlim=c(0,10), ylim=c(0, 10))
 lines(testX, testY)
@@ -53,10 +56,17 @@ lines(testX, testY)
 
 
 # LINEAR MODELS
-# The next examples use the cars dataset. See ?cars for more info.
+# Linear models in R can be used to perform a linear regression to assess the relationship between variables when the response variable, y, is normally distributed.
+# A linear model can't be used if your response variable is categorical (e.g., sex, which is binomial).
+#	In these cases, you can use a generalised linear model and specify the distribution and (if need be) the link function.
+#	In the case where y represents sex (male or female) or presence/absence (true or false), you could use a binomial distribution with the LogIt link function.
+# This tutorial will only cover standard linear regressions.
+
+# The next examples use the cars dataset. See ?cars for more info (type '?cars' while at the R command line and hit return to access the help for the cars dataset).
 # "The data give the speed of cars and the distances taken to stop."
 
-# Create a blank plot, sized to fit our data, with appropriate axes.
+# Create a blank plot (by setting the plotting character, pch,  to NA), sized to fit our data, with appropriate axes.
+# We want to plot speed on the x-axis (our predictor or explanatory variable) and stopping distance (our response variable) on the y-axis.
 plot(cars$speed, cars$dist, xlab='Car speed (mph)', ylab='Stopping distance (ft)', main='Car speed vs stopping distance', pch=NA)
 
 # Now add in data points.
@@ -132,7 +142,7 @@ lines(c(cars$speed[23], cars$speed[23]), c(cars$dist[23], fitted(mod)[23]))
 # The regression line we plotted with the abline() function is the line that minimises the sum of these squared residuals.
 sum(residuals(mod)^2) # 11353.52
 
-# We can plot the residuals against the fitted values:
+# We can plot the residuals against the fitted values, with a horizontal line at y=0:
 plot(fitted(mod), residuals(mod))
 abline(h=0)
 # They should be evenly distributed around the 0 line, which indicates that the errors of prediction (the residuals) are random.
@@ -143,7 +153,8 @@ plot(cars$speed, cars$dist, xlab='Car speed (mph)', ylab='Stopping distance (ft)
 abline(reg=mod, col='red')
 
 # We could fit other lines to our data, but all other lines would have higher sums of squares.
-# This type of regression is called an 'ordinary least squares' regression, because it's minimising the sum of the squares of the residuals.
+# This type of regression is called an 'ordinary least squares' (OLS) regression, because it's minimising the sum of the squares of the residuals.
+# Linear models are commonly fitted using the OLS approach, but it is not the only approach. It is, however, the only approach we'll discuss here.
 
 # A linear model calculates the slope (b) with the following equation:
 # b = r * ( sd(y) / sd(x) )
@@ -203,7 +214,7 @@ summary(mod)
 # Normally this isn't particularly interesting because the null hypothesis,
 #	 that the intercept is 0, is usually not a useful null hypothesis.
 # Usually we are more interested in whether there is a relationship between our variables.
-# This relationship is represented by the slope of the line.
+# This relationship is represented by the slope of the line (see below).
 
 ##################################################################
 # "# cars$speed    3.9324     0.4155   9.464 1.49e-12 ***"
@@ -240,13 +251,13 @@ rsq.adj <- 1 - (1 - rsq) * ( (nrow(cars) - 1) / (nrow(cars) - p - 1) )
 # Multiple regression
 # Car speed is obviously not the only factor that will have an effect on stopping distance.
 # We can append two other car-based factors to our dataframe.
-# A list of somewhat realistic masses that we expect to have an effect on dist:
+# A list of somewhat realistic masses that we DO expect to have an effect on dist:
 mass <- c(40, 80, 40, 90, 90, 40, 110, 200, 300, 50, 80, 60, 70, 80, 90, 80, 110, 110, 150, 70, 90, 200, 300, 40, 60, 120, 80, 90, 80, 90, 110, 80, 110, 150, 200, 80, 100, 150, 70, 90, 95, 100, 110, 110, 90, 110, 150, 155, 180, 90)
 # Note: the c() function in R combines these individual numbers into a numeric vector (i.e., a collection of numbers).
 
 # These are 50 random ages between 18 and 90, generated with sample(18:90, 50).
-# We expect that these will have no effect on stopping distance, as they are random numbers.
-# (Note that in the real world, driver age probably does have an effect on stopping distance; people aged 1, 30, and 90 are likely to have very different reaction times.)
+# We expect that these will have NO effect on stopping distance, as they are random numbers.
+# (Note that in the real world, driver age probably does have an effect on stopping distance; people aged 1, 30, and 117 are likely to have very different reaction times.)
 driverAge <- c(56, 85, 83, 32, 49, 78, 38, 29, 48, 69, 74, 41, 58, 62, 82, 87, 45, 50, 77, 26, 34, 66, 86, 65, 90, 27, 60, 46, 72, 28, 64, 19, 63, 59, 57, 54, 25, 51, 18, 61, 36, 67, 35, 31, 39, 81, 76, 23, 30, 68)
 
 # cbind binds these two extra columns to our existing cars dataframe, and creates a new 'cars2' object
@@ -259,11 +270,12 @@ mod3 <- lm(dist ~ speed + mass + driverAge, data=cars2)
 
 # Our R-squared value will keep increasing as we add in new predictor variables, but our adjusted R-squared value
 # should not increase (or will increase only slightly) when we add in driverAge, because it doesn't add much to the predictive power of our model.
-summary(mod1) # Multiple R-squared:  0.6511,  Adjusted R-squared:  0.6438
-summary(mod2) # Multiple R-squared:  0.8475,  Adjusted R-squared:  0.841
-summary(mod3) # Multiple R-squared:  0.8508,  Adjusted R-squared:  0.841
+summary(mod1) # speed only:				Multiple R-squared:  0.6511,  Adjusted R-squared:  0.6438
+summary(mod2) # speed and car mass:		Multiple R-squared:  0.8475,  Adjusted R-squared:  0.841
+summary(mod3) # speed and mass and age: Multiple R-squared:  0.8508,  Adjusted R-squared:  0.841
 
-# The adjusted r-squared of mod3 is the same as that of mod2, which tells us that adding in driverAge did not give us any additional explanatory power.
+# The adjusted r-squared of mod3 is the same as that of mod2, which tells us that adding in driverAge did not
+# give us any additional explanatory power (i.e., driver age had no significant effect on stopping distance).
 
 # Here's part of summary(mod3):
 ##################################################################
