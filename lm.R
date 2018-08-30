@@ -299,7 +299,9 @@ summary(mod3) # speed and mass and age: Multiple R-squared:  0.8508,  Adjusted R
 
 
 
-
+#######################################################################################
+##### Everything below here is a work in progress. Proceed at your own risk ###########
+#######################################################################################
 # Interactions
 # Adding in a (multiplicative) interaction term is the same as adding in a new additive predictor
 # variable that itself is made up of the product of the two terms in the interaction.
