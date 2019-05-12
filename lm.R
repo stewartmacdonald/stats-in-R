@@ -238,7 +238,18 @@ sqrt( sum(residuals(mod)^2) / (nrow(cars) - 2) )
 ##################################################################
 # R-squared is a measure of goodness of fit, and is the proportion of the response variable variation that is explained by the model.
 # In our simple linear regression, it is:
-rsq <- cor(cars$speed, cars$dist)^2 
+rsq <- cor(cars$speed, cars$dist)^2
+
+# Or, to calculate it manually:
+n <- length(cars$speed)
+x <- cars$speed
+y <- cars$dist
+
+topLine <- n * sum(x * y) - sum(x) * sum(y)
+bottomLine <- ((n * sum(x^2)) - sum(x)^2) * ((n * sum(y^2)) - sum(y)^2)
+
+rsq.check <- (topLine / sqrt(bottomLine))^2
+
 # R-squared will always increase as you add predictor variables in a multiple regression, but this doesn't mean that your model is getting better.
 # Adding more terms might simply start 'explaining' random noise in your data.
 # The adjusted R-squared value accounts for the number of terms in the model.
